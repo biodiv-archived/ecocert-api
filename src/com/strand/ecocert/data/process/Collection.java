@@ -54,14 +54,12 @@ public class Collection {
 	@Column (name = "timestamp")
 	private Timestamp timestamp;
 	
-	/**
-	 * Here status is valid or not. 
-	 * true - this particular record is transferred to factory.
-	 * false - this particular record is still available at washing station. 
-	 */
 	@Column (name = "status", nullable=false)
 	@Enumerated
 	private CollectionStatus status;
+	
+	@Column (name = "batch_id")
+	private long batchId;
 	
 	public void setCollectionId(int collectionId) {
 		this.collectionId = collectionId;
@@ -116,5 +114,11 @@ public class Collection {
 	}
 	public void setStatus(CollectionStatus status) {
 		this.status = status;
+	}
+	public long getBatchId() {
+		return batchId;
+	}
+	public void setBatchId(long batchId) {
+		this.batchId = batchId;
 	}
 }

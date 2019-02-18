@@ -81,21 +81,24 @@ public class BatchService {
 		float quantity = 0.0f;
 		int batchSize  = jsonArray.length();
 		
+		// Iterate over all the collection in the given batch
 		float []moistureContents = new float[batchSize];
 		for(int i=0;i<batchSize;i++) {
 			int collectionId = jsonArray.getInt(i);
 			Collection collection = entityManager.find(Collection.class, collectionId);
 			moistureContents[i] = collection.getMoistureContent();
 			quantity += collection.getQuantity();
-			collection.setStatus(CollectionStatus.TRANSFERRED);
 			collections.add(collection);
 		}
 		int factoryId = jsonObject.getInt("factoryId");
 		Factory factory = entityManager.find(Factory.class, factoryId);
 		
+		// Create new batch (lot) as new object to persist
 		BatchProduction batch = new BatchProduction();
 		batch.setFactoryId(factory);
 		
+		// The time-stamp is taken from ui (Just to make sure that it is local)
+		//.. if it is not provided then taken from current system time.
 		Timestamp transferTimestamp = null;
 		if(!jsonObject.isNull("transferTimestamp"))
 			transferTimestamp = Timestamp.valueOf(jsonObject.getString("transferTimestamp"));
@@ -105,8 +108,10 @@ public class BatchService {
 			batch.setTransferTimestamp(transferTimestamp);
 		
 		batch.setproductions(collections);
+		
 		batch.setWeight(quantity);
 		
+		// Default value for moisture content is average, unless specified.
 		MoistureContentCalculationType type;
 		if(jsonObject.isNull("moistureContentCalculationType"))
 			type = MoistureContentCalculationType.AVERAGE;
@@ -123,6 +128,16 @@ public class BatchService {
 		
 		entityManager.persist(batch);
 		entityManager.getTransaction().commit();
+		
+		// Update the status and batch for all the collection in single batch
+		entityManager.getTransaction().begin();
+		int batchId = batch.getBatchId();
+		for(Collection collection : collections) {
+			collection.setBatchId(batchId);
+			collection.setStatus(CollectionStatus.TRANSFERRED);
+			entityManager.merge(collection);
+		}
+		entityManager.getTransaction().commit();
 		return batch;
 	}
 	
@@ -134,7 +149,7 @@ public class BatchService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		entityManager.getTransaction().begin();
-		int batchId = Integer.parseInt(jsonObject.get("collectionId").toString());
+		int batchId = Integer.parseInt(jsonObject.get("batchId").toString());
 		BatchProduction batch = entityManager.find(BatchProduction.class, batchId);
 		if(batch==null)
 			throw new NotFoundException();
