@@ -1,5 +1,8 @@
 package com.strand.ecocert.util;
 
+import java.security.MessageDigest;
+import java.util.Base64;
+
 import com.strand.ecocert.data.constants.MoistureContentCalculationType;
 
 public class Utility {
@@ -35,4 +38,15 @@ public class Utility {
 		}
 		return retValue;
 	}
+	
+	public static String digestPassword(String plainTextPassword) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(plainTextPassword.getBytes("UTF-8"));
+            byte[] passwordDigest = md.digest();
+            return new String(Base64.getEncoder().encode(passwordDigest));
+        } catch (Exception e) {
+            throw new RuntimeException("Exception encoding password", e);
+        }
+    }
 }

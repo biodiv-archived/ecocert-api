@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,10 +24,15 @@ import com.strand.ecocert.data.constants.UserType;
 		@UniqueConstraint(columnNames = {"user_name"}),
 		@UniqueConstraint(columnNames = {"email"})
 })
+@NamedQueries({
+    @NamedQuery(name = User.FIND_BY_USERNAME_PASSWORD, query = "SELECT u FROM Farmer u WHERE u.userName = :userName AND u.password = :password")
+})
 @XmlRootElement
 @Inheritance( strategy = InheritanceType.JOINED)
 public class User {
 
+	public static final String FIND_BY_USERNAME_PASSWORD = "FIND_BY_USERNAME_PASSWORD";
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column( name = "user_id", nullable=false)

@@ -22,7 +22,31 @@
 		<filter-name>CorsFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	
+	<filter>
+		<filter-name>JWTTokenNeededFilter</filter-name>
+		<filter-class>com.strand.ecocert.filter.JWTTokenNeededFilter</filter-class>
+	</filter>
 
+	<filter-mapping>
+		<filter-name>JWTTokenNeededFilter</filter-name>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
+	
+	<servlet>
+		<servlet-name>LoginService</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>com.strand.ecocert.api.login</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LoginService</servlet-name>
+		<url-pattern>/login/*</url-pattern>
+	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>FarmerServices</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
