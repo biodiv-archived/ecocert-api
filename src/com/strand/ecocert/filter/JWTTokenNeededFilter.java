@@ -11,7 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.NotAuthorizedException;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
@@ -51,7 +51,9 @@ public class JWTTokenNeededFilter implements Filter{
 
         // Check if the HTTP Authorization header is present and formatted correctly
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new NotAuthorizedException("Authorization header must be provided");
+            //throw new NotAuthorizedException("Authorization header must be provided");
+        	((HttpServletResponse) response).setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+        	return;
         }
 
         // Extract the token from the HTTP Authorization header
@@ -63,7 +65,8 @@ public class JWTTokenNeededFilter implements Filter{
             Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             claims.getBody();
         } catch (Exception e) {
-            throw new NotAuthorizedException(Response.Status.UNAUTHORIZED);
+        	((HttpServletResponse) response).setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+        	return;
         }
         chain.doFilter(request, response);
 	}
