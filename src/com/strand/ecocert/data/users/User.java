@@ -25,7 +25,7 @@ import com.strand.ecocert.data.constants.UserType;
 		@UniqueConstraint(columnNames = {"email"})
 })
 @NamedQueries({
-    @NamedQuery(name = User.FIND_BY_USERNAME_PASSWORD, query = "SELECT u FROM Farmer u WHERE u.userName = :userName AND u.password = :password")
+    @NamedQuery(name = User.FIND_BY_USERNAME_PASSWORD, query = "SELECT u FROM User u WHERE u.userName = :userName AND u.password = :password")
 })
 @XmlRootElement
 @Inheritance( strategy = InheritanceType.JOINED)
@@ -80,9 +80,10 @@ public class User {
 		this.userName = userName;
 	}
 	
-	public String getPassword() {
-		return password;
-	}
+	/** 
+	 * We don't need get method for password for the protection purpose of the application
+	 * @param password
+	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}

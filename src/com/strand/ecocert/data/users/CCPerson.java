@@ -7,6 +7,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.strand.ecocert.data.constants.UserType;
 import com.strand.ecocert.data.entity.CollectionCenter;
 
 @Entity
@@ -32,5 +33,14 @@ public class CCPerson extends User{
 	}
 	public void setRole(String role) {
 		this.role = role;
+	}
+	
+	@Override
+	public UserType getUserType() {
+		return UserType.COLLECTOR;
+	}
+	@Override
+	public void setUserType(UserType userType) {
+		super.setUserType(UserType.COLLECTOR);
 	}
 }

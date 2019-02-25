@@ -3,7 +3,6 @@ package com.strand.ecocert.filter;
 import java.io.IOException;
 import java.security.Key;
 
-import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,10 +12,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.Priorities;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
 
 import com.strand.ecocert.util.DefaultKeyGenerator;
 import com.strand.ecocert.util.KeyGenerator;
@@ -31,9 +28,6 @@ import io.jsonwebtoken.Jwts;
  *
  */
 
-@Provider
-@JWTTokenNeeded
-@Priority(Priorities.AUTHENTICATION)
 public class JWTTokenNeededFilter implements Filter{
 	
 	@Inject

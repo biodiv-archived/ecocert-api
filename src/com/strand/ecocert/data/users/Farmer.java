@@ -10,6 +10,7 @@ import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.strand.ecocert.data.constants.UserType;
 import com.strand.ecocert.data.entity.CollectionCenter;
 
 @Entity
@@ -134,5 +135,15 @@ public class Farmer extends User{
 
 	public void setCollectionCenter(CollectionCenter collectionCenter) {
 		this.collectionCenter = collectionCenter;
+	}
+	
+	@Override
+	public UserType getUserType() {
+		return UserType.FARMER;
+	}
+	
+	@Override
+	public void setUserType(UserType userType) {
+		super.setUserType(UserType.FARMER);
 	}
 }

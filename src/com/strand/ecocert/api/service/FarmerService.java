@@ -27,7 +27,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.strand.ecocert.data.users.Farmer;
-import com.strand.ecocert.filter.JWTTokenNeeded;
 import com.sun.jersey.api.NotFoundException;
 
 /**
@@ -67,7 +66,6 @@ public class FarmerService {
 	@Path("{farmerId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
-	@JWTTokenNeeded
 	public Farmer getFarmer(@PathParam("farmerId") int farmerId) {
 		
 		
@@ -125,7 +123,7 @@ public class FarmerService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		entityManager.getTransaction().begin();
-		Farmer farmer = entityManager.find(Farmer.class, Integer.parseInt(jsonObject.get("farmerId").toString()));
+		Farmer farmer = entityManager.find(Farmer.class, Integer.parseInt(jsonObject.get("userId").toString()));
 		if(farmer==null)
 			throw new NotFoundException();
 		objectMapper.readerForUpdating(farmer).readValue(jsonString);

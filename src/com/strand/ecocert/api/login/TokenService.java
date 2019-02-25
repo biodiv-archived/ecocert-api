@@ -13,6 +13,7 @@ import javax.persistence.PersistenceContextType;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -22,7 +23,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONObject;
 
-import com.strand.ecocert.data.users.Farmer;
 import com.strand.ecocert.data.users.User;
 import com.strand.ecocert.util.DefaultKeyGenerator;
 import com.strand.ecocert.util.KeyGenerator;
@@ -31,7 +31,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Path("user")
-public class UserService {
+public class TokenService {
 	
 	@Context
     private UriInfo uriInfo;
@@ -42,22 +42,28 @@ public class UserService {
 	@PersistenceContext(unitName="ecocert", type=PersistenceContextType.TRANSACTION)
 	private EntityManager entityManager;
 	
-	public UserService() {
+	public TokenService() {
 		entityManager = Persistence.createEntityManagerFactory( "ecocert" ).createEntityManager();
 		keyGenerator = new DefaultKeyGenerator();
 	}
 	
 	@POST
-	@Path("login")
+	@Path("token")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response authenticateUser(String jsonString) {
 		try {
 			JSONObject jsonObject = new JSONObject(jsonString);
 			String userName = jsonObject.getString("userName");
 			String password = jsonObject.getString("password");
-			int id = authenticate(userName, password);
-			String token = issueToken(id);
-			return Response.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
+			User user = authenticate(userName, password);
+			String token = issueToken(user.getUserId());
+			Response response = Response.ok()
+					.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+					//.entity(user.getUserType().toString())
+					.entity(user)
+					.build();
+			return response;
 		} catch (Exception e) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
@@ -79,15 +85,15 @@ public class UserService {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-	private int authenticate(String userName, String password) {
-		Farmer farmer = entityManager.createNamedQuery(User.FIND_BY_USERNAME_PASSWORD, Farmer.class)
+	private User authenticate(String userName, String password) {
+		User user = entityManager.createNamedQuery(User.FIND_BY_USERNAME_PASSWORD, User.class)
 		.setParameter("userName", userName)
 		.setParameter("password", password)
 		.getSingleResult();
 		
-        if (farmer == null)
+        if (user == null)
             throw new SecurityException("Invalid user/password");
         else
-        	return farmer.getUserId();
+        	return user;
 	}
 }
